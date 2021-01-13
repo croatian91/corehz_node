@@ -1,10 +1,25 @@
 version: "3.9"
 
 services:
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: corehz
+    volumes:
+      - mongodata:/data/db
+    ports:
+      - "27017:27017"
   web:
     build: .
-    command: yarn run start
+    command: yarn run dev
     volumes:
-      - .:/app
+      - .:/code
     ports:
-      - "1337:1337"
+      - "4000:4000"
+    depends_on:
+      - mongo
+
+volumes:
+  mongodata:

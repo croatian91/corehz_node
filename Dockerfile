@@ -1,11 +1,9 @@
 FROM node:12.18.1
 
-WORKDIR /usr/src/app
+WORKDIR /code
 
 COPY ["package*.json", "yarn.lock", "./"]
 
-RUN npm install
+RUN yarn install
 
 COPY . .
-
-CMD [ "npm", "run", "start" ]
