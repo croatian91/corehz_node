@@ -1,42 +1,29 @@
-import { ApolloServer, gql } from 'apollo-server';
+import "reflect-metadata";
+import { ApolloServer } from "apollo-server";
+import { buildSchema } from "type-graphql";
+import { MuscleGroupResolver } from "./resolvers/muscle-group-resolver";
+import { WorkoutStyleResolver } from "./resolvers/workout-style-resolver";
+import { EquipmentResolver } from "./resolvers/equipment-resolver";
+import { ExerciceResolver } from "./resolvers/exercice-resolver";
+import { WorkoutResolver } from "./resolvers/workout-resolver";
 
-const typeDefs = gql`
-  # Comments in GraphQL strings (such as this one) start with the hash (#) symbol.
+const bootstrap = async () => {
+  const schema = await buildSchema({
+    resolvers: [
+      MuscleGroupResolver,
+      WorkoutStyleResolver,
+      EquipmentResolver,
+      ExerciceResolver,
+      WorkoutResolver,
+    ],
+  });
 
-  # This "Book" type defines the queryable fields for every book in our data source.
-  type Book {
-    title: String
-    author: String
-  }
+  const server = new ApolloServer({ schema });
 
-  # The "Query" type is special: it lists all of the available queries that
-  # clients can execute, along with the return type for each. In this
-  # case, the "books" query returns an array of zero or more Books (defined above).
-  type Query {
-    books: [Book]
-  }
-`;
-
-const books = [
-  {
-    title: 'The Awakening',
-    author: 'Kate Chopin',
-  },
-  {
-    title: 'City of Glass',
-    author: 'Paul Auster',
-  },
-];
-
-const resolvers = {
-  Query: {
-    books: () => books,
-  },
+  // The `listen` method launches a web server.
+  server.listen().then(({ url }) => {
+    console.log(`🚀  Server ready at ${url}`);
+  });
 };
 
-const server = new ApolloServer({ typeDefs, resolvers });
-
-// The `listen` method launches a web server.
-server.listen().then(({ url }) => {
-  console.log(`🚀  Server ready at ${url}`);
-});
+bootstrap();
